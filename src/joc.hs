@@ -8,7 +8,7 @@ import Data.List
 -- The board is a list of integers where each element of the list is a column of the game connect-4
 type Board = [[Int]] 
 data Player = Player1 | Bot
-	deriving(Show, Eq)
+	deriving (Eq)
 type Column = Int --Column of the board
 type Strategy = Board  -> IO Column
 
