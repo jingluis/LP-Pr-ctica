@@ -304,7 +304,7 @@ opposite_player Bot = Player1
 randStrategy :: Strategy
 randStrategy board = do
 	col <- randInt 0 ((length board) - 1)
-	if (last (board !! col) /= 0) then do
+	if last (board !! col) /= 0 then do
 		randStrategy board
 	else do
 		return col
@@ -334,9 +334,11 @@ randStrategy board = do
 greedyStrategy :: Strategy
 greedyStrategy board = do
 	max_score_col <- get_max_piece_board board
+	let cols = getValidColumns board
+	let cols_size = length cols
 	if fst max_score_col == (-1) then do
 		let cols = getValidColumns board
-		rand_col <- randInt 0 ((length cols) - 1)
+		rand_col <- randInt 0 (cols_size - 1)
 		return $ cols !! rand_col
 	else do
 		if fst max_score_col >= 4 then do
@@ -345,8 +347,7 @@ greedyStrategy board = do
 			-- positions that the human player can win with the current board
 			let opponents_winning = winning_positions board
 			if length opponents_winning > 1 then do
-				let cols = getValidColumns board
-				rand_col <- randInt 0 ((length cols) - 1)
+				rand_col <- randInt 0 (cols_size - 1)
 				return $ cols !! rand_col
 			else do
 				if length opponents_winning == 1 then do
@@ -387,7 +388,7 @@ get_minimax	board list alpha beta = do
 		return []
 	else do
 		let x = head list
-		let aux_board = (putPiece board Bot x)
+		let aux_board = putPiece board Bot x
 		if check_four_connected aux_board Bot x then do
 			return [(x,(-99999))]
 		else do
@@ -422,7 +423,7 @@ negamax board player depth max_depth alpha beta = do
 		else do
 			-- number of free cells
 			let pb_moves = n*m - n_moves
-			if (any (\x -> check_four_connected (putPiece board player x) player x) moves) then do
+			if any (\x -> check_four_connected (putPiece board player x) player x) moves then do
 				return $ div (n*m + 1 - pb_moves) 2
 			else do
 				-- upper bound of our score as we cannot win immediately
@@ -436,7 +437,8 @@ negamax board player depth max_depth alpha beta = do
 					rec_loop board moves depth max_depth alpha beta_aux player
 
 
--- Helper function of the negamax algorithm, it reccursively score connect 4 position using negamax variant of alpha-beta algorithm.
+-- Helper function of the negamax algorithm, it reccursively score connect 4 position using negamax variant of alpha-beta 
+-- algorithm.
 -- and keep the best score at the moment
 rec_loop :: Board -> [Int] -> Int -> Int -> Int -> Int -> Player -> IO Int
 rec_loop board list depth max_depth alpha beta player = do
@@ -469,7 +471,7 @@ getColumn :: Board -> IO Int
 getColumn board = do
 	putStrLn "Introdueix la columna que vols posar la fitxa"
 	s <- getLine
-	if (not $ all (\c -> c >= '0' && c <= '9') s) then do
+	if not $ all (\c -> c >= '0' && c <= '9') s then do
 		putStrLn "Valor no valid, ha de ser numeric, torna a introduir"
 		getColumn board
 	else do
@@ -478,7 +480,7 @@ getColumn board = do
 			putStrLn "Valor invalid, ha de ser un valorentre 0 i la llargada del tauler, torna a introduir"
 			getColumn board
 		else do
-			if(last (board !! col) /= 0) then do
+			if last (board !! col) /= 0 then do
 				putStrLn "Columna plena, torna a introduir un altre valor"
 				getColumn board
 			else do
@@ -550,7 +552,7 @@ play board str1 = do
 	putStrLn ("COMENÇA EL JUGADOR " ++ (if start_player == 0 then "Huma!\n" else "Bot!\n"))
 	putStrLn "\x1b[34mJUGADOR HUMA: VERMELL        JUGADOR BOT: VERD\x1b[0m" 
 	score <- turn board start_player str1 1
-	if (fst score == snd score)
+	if fst score == snd score
     	then do putStrLn "\x1b[0mAqui hi ha un empat!"
     	else do putStrLn $ "\x1b[0mJugador " ++ ((\(x,y) -> if x > y then "Huma" else "Bot") score) ++ " ha guanyat!"
   	return ()
@@ -562,7 +564,7 @@ play board str1 = do
 initGame = do
 	putStrLn "Introdueix el nombre de files i columnes (format: x y)"
 	s <- getLine
-	if  (not $ validSize s) then do
+	if  not $ validSize s then do
 		putStrLn "El valor introduit no es correcte: ha de ser numèric , torno al principi"
 		initGame
 	else do
@@ -570,11 +572,11 @@ initGame = do
 		let m = dropWhile (\x -> x < '0' || x > '9') (drop (length n) s)
 		putStrLn ("selecciona la dificultat del joc:\n" ++ "\t1) FACIL\n" ++ "\t2) MODERAT\n" ++ "\t3) DIFICIL")
 		s <- getLine
-		if (not $ isNum s) then do
+		if not $ isNum s then do
 			putStrLn "El valor ha de ser numeric i ha d'estar entre 1 i 3, torno al principi"
 			initGame
 		else do
-			let bot = (read s :: Int)
+			let bot = read s :: Int
 			play (createEmptyBoard (read m :: Int)  (read n :: Int)) (selectAI bot)
 			return ()
 
