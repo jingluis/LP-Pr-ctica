@@ -27,7 +27,7 @@ randInt low high = do
     return result
 
 
--- isNum is a function that checks whether all characters of a string are numbers or not
+-- isNum is a function that checks whether all characters of a string are numbers between 1 and 3 both inclusive or not
 isNum :: String -> Bool
 isNum s = (length s == 1) && (all (\c -> c >= '1' && c <= '3') s) 
 
