@@ -116,12 +116,6 @@ valueAt :: Board -> (Int,Int) -> Int
 valueAt board (i,j) = board !! i !! j
 
 
--- Given a board and a Column pos, return the number of pieces in the column pos
--- Pre: the given column is a valid Column
-number_pieces :: Board -> Column -> Int
-number_pieces board i = length $ takeWhile (/= 0) (board !! i)
-
-
 -- Given two integers n and m, return a board of n rows and m columns
 createEmptyBoard :: Int -> Int -> Board
 createEmptyBoard n m = [[0 | j <- [1..m]] | i <- [1..n]]
@@ -198,15 +192,14 @@ act_antidiagonal_down board (x,y) val
 -- Pre: column pos is a valid position
 get_max_row_col_diags :: Board -> Player -> Column -> [Int]
 get_max_row_col_diags board player pos = do
+	let n = length board
+	let m = (length $ head board)
 	-- Largest consecutive number of pieces in the column pos
 	let max_col = maxpiece_col (board!!pos) (if player == Bot then 2 else 1)
 	-- Largest consecutive number of pieces in the highest not free row of the column pos 
 	let act_row = (length $ takeWhile (/= 0) (board!!pos)) - 1
-	let row_board = change_to_row board
-	let max_row = max_actual_row (row_board !! ((length row_board) - 1 - act_row)) pos (if player == Bot then 2 else 1)
+	let max_row = max_actual_row ((change_to_row board) !! (m - 1 - act_row)) pos (if player == Bot then 2 else 1)
 	-- Largest consecutive number of pieces in the two diagonals of the column pos
-	let n = length board
-	let m = (length $ head board)
 	-- in both max_diag and max_antidiag, we need to minus 1 because we count the central element twice
 	let max_diag = (act_diagonal_up board m (pos,act_row) (if player == Bot then 2 else 1)) + (act_diagonal_down board n (pos,act_row) (if player == Bot then 2 else 1)) - 1
 	let max_antidiag = (act_antidiagonal_up board (n,m) (pos,act_row) (if player == Bot then 2 else 1)) + (act_antidiagonal_down board (pos,act_row) (if player == Bot then 2 else 1)) - 1
@@ -218,7 +211,6 @@ check_four_connected :: Board -> Player -> Column -> Bool
 check_four_connected board player pos = do
 	let res_list = get_max_row_col_diags board player pos
 	any (>= 4) res_list
-
 
 -- Given a board , a column c and a player p, return the nubmer of maximum_consecutive pieces it has after playing the column c
 -- and the position as a tuple of (int, column)
