@@ -44,6 +44,17 @@ _Un exemple d'execució seria:_
 
 ![](exemple1.jpg) 
 
+## Tutorial 📑
+_Aquest programa permet el jugador enfrontar-se amb un dels bots dissenyats, concretament són els següents_
+
+* Fàcil (el Bot escolleix una columna a l'atzar)
+* Moderat (el Bot usa l'estratègia greedy)
+* Difícil (el Bot usa l'estratègia minimax)
+
+_Un cop escollida la mida del tauler i el nivell del Bot, l'usuari només ha d'introduir en cada moment la columna on vol posar la fitxa. No cal amoïnar-se si s'equivoca sense voler o no perquè el programa l'indicarà._
+![](exemple2.jpg) 
+_En tot moment es veurà el tauler actualitzada i al final de la partida(empat o hi ha un guanyador) es mostrarà en forma de missatge_.
+![](exemple3.jpg) 
 ## Construït amb 🛠️
 
 * [Haskell](https://www.haskell.org) 
