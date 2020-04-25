@@ -384,7 +384,7 @@ get_minimax	board list alpha beta = do
 		if check_four_connected aux_board Bot x then do
 			return [(x,(-99999))]
 		else do
-			let depth = 5
+			let depth = 6
 			score <- negamax aux_board Player1 0 depth alpha beta
 			aux_list <- get_minimax board (tail list) alpha beta
 			return ((x,score) : aux_list)
@@ -461,7 +461,7 @@ rec_loop board list depth max_depth alpha beta player = do
 -- Function that given a valid board, returns a valid column that user has inputed while playing the game
 getColumn :: Board -> IO Int
 getColumn board = do
-	putStrLn "Introdueix la columna que vols posar la fitxa"
+	putStrLn "\x1b[0mIntrodueix la columna que vols posar la fitxa"
 	s <- getLine
 	if not $ all (\c -> c >= '0' && c <= '9') s then do
 		putStrLn "Valor no valid, ha de ser numeric, torna a introduir"
@@ -469,7 +469,7 @@ getColumn board = do
 	else do
 		let col = read s :: Int
 		if (col < 0 || col >= (length board)) then do
-			putStrLn "Valor invalid, ha de ser un valorentre 0 i la llargada del tauler, torna a introduir"
+			putStrLn ("Valor invalid, ha de ser un valorentre 0 i " ++ (show (length board - 1)) ++ ". Torna a introduir")
 			getColumn board
 		else do
 			if last (board !! col) /= 0 then do
@@ -516,11 +516,11 @@ turn board player_turn str1 number_turn = do
 		return (0,0)
 	else do
 		if player_turn == 0 then do
-			putStrLn "======================================"
+			putStrLn "\x1b[0m======================================"
 			putStrLn ("TORN " ++ (show number_turn) ++" - Torn Player1")
 			putStrLn "====================================== \n"
 		else do
-			putStrLn "======================================"
+			putStrLn "\x1b[0m======================================"
 			putStrLn ("TORN " ++ (show number_turn) ++" - Torn Bot")
 			putStrLn "======================================\n"
 		(newBoard,col) <- makeTurns board (if player_turn == 0 then Player1 else Bot) str1
@@ -553,8 +553,9 @@ play board str1 = do
 -- function that is responsible of the initialization of the game
 -- it will make the user enter the valid board size, the difficulty of the game and after that
 -- it will start the game
+initGame :: IO ()
 initGame = do
-	putStrLn "Introdueix el nombre de files i columnes (format: x y)"
+	putStrLn "\x1b[0mIntrodueix el nombre de files i columnes (format: x y)"
 	s <- getLine
 	if  not $ validSize s then do
 		putStrLn "El valor introduit no es correcte: ha de ser numèric , torno al principi"
